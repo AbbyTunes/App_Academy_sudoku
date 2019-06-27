@@ -12,46 +12,47 @@ class SudokuGame
 
   def get_pos
     pos = nil
-    until pos && valid_val?(pos)
-      puts "Please enter a value between 1 and 9 (0 to clear the tile)"
+    until pos && valid_pos?(pos)
+      puts "Please enter a position on the board (e.g., '3,4')"
       print "> "
-      pos = parse_val(gets.chomp)
+
+      begin
+        pos = parse_pos(gets.chomp)
+      rescue
+        puts "Invalid position entered (did you use a comma?)"
+        puts ""
+
+        pos = nil
+      end
     end
     pos
   end
 
   def get_val
     val = nil
-    until val && valid_pos?(val)
-      puts "Please enter a position on the board (e.g., '3,4')"
+    
+    until val && valid_val?(val)
+      puts "Please enter a value between 1 and 9 (0 to clear the tile)"
       print "> "
-
-      begin
-        val = parse_pos(gets.chomp)
-      rescue
-        puts "Invalid position entered (did you use a comma?)"
-        puts ""
-
-        val = nil
-      end
+      # str = gets.chomp.to_i
+      val = parse_val(gets.chomp)
     end
     val
   end
 
   def parse_pos(string)
-    string.split(",").map { |char| Integer(char) }
+     string.split(",").map(&:to_i)
+    # string.split(",").map { |char| Integer(char) }
   end
 
   def parse_val(string)
-    Integer(string)
+    string.to_i
   end
 
   def play_turn
     board.render
-
-    val = get_val
     pos = get_pos
-
+    val = get_val
     board[pos] = val
   end
 
@@ -72,8 +73,7 @@ class SudokuGame
   end
 
   def valid_val?(val)
-    val.is_a?(Integer) &&
-      val.between?(0, 9)
+    val.is_a?(Integer) && val.between?(0, 9)
   end
 
   private
